@@ -25,9 +25,15 @@ database = "database"
 # Controllers.
 #----------------------------------------------------------------------------#
 
-@app.route('/')
+@app.route('/', methods=['POST','GET'])
 def index():
-   return render_template('table_single.html')
+
+    req_json = request.get_json()
+    # url = request.values.get('url')
+    # if len(url) <= 0:
+    #     return error_result({"msg":"Unable to find URL param"})
+
+    return render_template('table_single.html')
 
 @app.route('/trigger')
 def trigger():
@@ -37,6 +43,9 @@ def trigger():
     cur = conn.cursor()
     cur.execute(select_sql, taskId)
     return 'taskId'
+    # return luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
+
+
 
 def create_table(conn, create_table_sql):
     try:
