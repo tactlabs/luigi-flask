@@ -54,8 +54,6 @@ class Toronto(luigi.Task):
         return { 'out1' : luigi.LocalTarget("carandtruck1.csv", format=UTF8), 'out2' : luigi.LocalTarget("taskid1.txt") }
     
     def run(self):
-        print(HrefCount(self).task_id)
-        print(self.task_id)
         with open(self.input()['in1']['out1'].path) as fin, open(self.input()['in1']['out2'].path) as fintask, open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:
             for lin in fintask:
                 taskId = lin.strip()
