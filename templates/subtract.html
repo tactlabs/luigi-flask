@@ -1,0 +1,18 @@
+<html>
+ <body>
+ <form method="post" action="/results">
+   <p>Enter first number:</p>
+   <input type='number' name='num1'>
+   <p>Please select:
+         <select name="operand_select">
+             {% for o in data %}
+             <option value="{{ o.operand }}">{{ o.operand }}</option>
+             {% endfor %}
+        </select> </p>
+   <p>Enter second number:</p>
+   <input type='number' name='num2'>
+   <div class='results'></div></br>
+   <button type='submit' name='sub'>Calculate</button>
+  </form>
+ </body>
+</html>

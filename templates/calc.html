@@ -1,0 +1,40 @@
+<html>
+ <body>
+   <p>Enter first number:</p>
+   <input type='number' class='first_val'>
+   <p>Enter second number:</p>
+   <input type='number' class='second_val'>
+   </br>
+   <div class='results'></br></div>
+   </br>
+   <button type='button' class='add'>Add</button>
+   <button type='button' class='sub'>Sub</button>
+   <button type='button' class='multiply'>Multiply</button>
+ </body>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+ <script>
+   $(document).ready(function() {
+		
+     $('.add').click(function() {
+	    var val1 = parseInt($('.first_val').val());
+        var val2 = parseInt($('.second_val').val());
+       var val3 = val1+val2;
+       $('.results').html('The result is '+val3);
+     });
+	 
+	  $('.sub').click(function() {
+	    var val1 = parseInt($('.first_val').val());
+        var val2 = parseInt($('.second_val').val());
+       var val3 = val1-val2;
+       $('.results').html('The result is '+val3);
+     });
+	 
+	  $('.multiply').click(function() {
+	    var val1 = parseInt($('.first_val').val());
+        var val2 = parseInt($('.second_val').val());
+       var val3 = val1*val2;
+       $('.results').html('The result is '+val3);
+     });
+   });
+ </script>
+</html>

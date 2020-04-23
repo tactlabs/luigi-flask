@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>Result</title>
+</head>
+ <body>
+	{% if result|length > 0 %}
+		<table border="1" class="dataframe">
+		<thead>
+			<tr>
+			  <th>ID</th>
+			  <th>URL</th>
+			  <th>KEY</th>
+			  <th>VALUE</th>
+			</tr>
+		</thead>
+		<tbody>		   
+			{% for item in result %}
+				<tr> 
+					<th>{{item[0]}}</th>
+					<td>{{item[1]}}</td>
+					<td>{{item[2]}}</td>
+					<td>{{item[3]}}</td>
+				</tr>
+			{% endfor %}
+		  </tbody>
+		</table>
+	{% else %}
+		<h4>Unable to get the json from input URL:</h4><h2><a href="{{ ''.join(['http://', url]) }}">{{ url }}</a></h2>
+	{% endif %}
+	 </body>
+	</html>
