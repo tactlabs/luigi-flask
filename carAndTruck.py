@@ -7,6 +7,7 @@ import luigi
 import requests
 from bs4 import BeautifulSoup
 from luigi.format import UTF8
+import os
 
 class HrefCount(luigi.Task):
     urlpath = luigi.Parameter()
@@ -14,10 +15,11 @@ class HrefCount(luigi.Task):
         return []
 
     def output(self):
-        return luigi.LocalTarget("toronto1.txt")
+        return { 'out1' : luigi.LocalTarget("toronto.txt"), 'out2' : luigi.LocalTarget("taskid.txt") }
 
     def run(self):
-        with self.output().open('w') as fout:
+        with open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:
+            ftask.write('{}\n'.format(self.task_id))
             response = requests.get(self.urlpath)
             if(response.status_code == 200):
                 fout.write('{}\n'.format(self.urlpath))
@@ -46,13 +48,21 @@ class HrefCount(luigi.Task):
 class Toronto(luigi.Task):
     urlpath = luigi.Parameter()
     def requires(self):
-        return [HrefCount(self.urlpath)]
+        return { 'in1' :HrefCount(self.urlpath) }
 
     def output(self):
-        return luigi.LocalTarget("carandtruck1.csv", format=UTF8)
+        return { 'out1' : luigi.LocalTarget("carandtruck1.csv", format=UTF8), 'out2' : luigi.LocalTarget("taskid1.txt") }
     
     def run(self):
-        with self.input()[0].open() as fin, self.output().open('w') as fout:
+        print(HrefCount(self).task_id)
+        print(self.task_id)
+        with open(self.input()['in1']['out1'].path) as fin, open(self.input()['in1']['out2'].path) as fintask, open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:
+            for lin in fintask:
+                taskId = lin.strip()
+                ftask.write('{}\n'.format(taskId))
+            ftask.write('{}\n'.format(self.task_id))
+            fintask.close()
+            os.remove(self.input()['in1']['out2'].path)
             for line in fin:
                 url = line.strip()
                 responseData = requests.get(url)
@@ -76,9 +86,12 @@ class Toronto(luigi.Task):
                             fout.write('{} | {} | {} | {}\n'.format(link,title,price,location))
                         except Exception as e:
                             print (e)
+            fin.close()
+            os.remove(self.input()['in1']['out1'].path)
 
 
 if __name__ == '__main__':
     luigi.run()
+    
 
 

@@ -31,9 +31,12 @@ def index():
 
 @app.route('/trigger')
 def trigger():
-       return luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
-
-
+    taskId = luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
+    conn = sqlite3.connect(database)
+    select_sql = ''' SELECT * FROM tasks WHERE task_id IN (%s) '''
+    cur = conn.cursor()
+    cur.execute(select_sql, taskId)
+    return 'taskId'
 
 def create_table(conn, create_table_sql):
     try:

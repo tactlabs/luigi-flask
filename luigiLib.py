@@ -6,6 +6,10 @@
 import subprocess
 
 def tasks(url):
-    # subprocess.run([ 'python', '-m', 'luigi', '--module', 'carAndTruck', 'Toronto', '--urlpath', url ]) 
+    # subprocess.run([ 'python', '-m', 'luigi', '--module', 'carAndTruck', 'Toronto', '--urlpath', url ])
+    taskId = [] 
     subprocess.run(['python','carAndTruck.py','Toronto','--urlpath',url])
-    return 'Hello'
+    with open('taskid1.txt', 'r') as fin:
+        for line in fin:
+            taskId.append(line.strip())
+    return taskId
