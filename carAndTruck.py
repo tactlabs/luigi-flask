@@ -51,7 +51,7 @@ class Toronto(luigi.Task):
         return { 'in1' :HrefCount(self.urlpath) }
 
     def output(self):
-        return { 'out1' : luigi.LocalTarget("carandtruck1.csv", format=UTF8), 'out2' : luigi.LocalTarget("taskid1.txt") }
+        return { 'out1' : luigi.LocalTarget("result.csv", format=UTF8), 'out2' : luigi.LocalTarget("taskid1.txt") }
     
     def run(self):
         with open(self.input()['in1']['out1'].path) as fin, open(self.input()['in1']['out2'].path) as fintask, open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:

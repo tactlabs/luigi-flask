@@ -11,6 +11,7 @@ from sqlite3 import Error
 import os.path
 import luigiLib 
 import subprocess
+import os
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -19,6 +20,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "database.db")
+file_path = os.path.join(BASE_DIR, "result.csv")
 database = "database"
 
 #----------------------------------------------------------------------------#
@@ -35,15 +37,48 @@ def index():
 
     return render_template('table_single.html')
 
-@app.route('/trigger')
+@app.route('/trigger', methods=['POST','GET'])
 def trigger():
-    taskId = luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
-    conn = sqlite3.connect(database)
-    select_sql = ''' SELECT * FROM tasks WHERE task_id IN (%s) '''
-    cur = conn.cursor()
-    cur.execute(select_sql, taskId)
-    return 'taskId'
-    # return luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
+    if request.method == 'POST':
+        data = request.form
+        uurl = data.get('url')
+        # taskId = luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
+        URL = 'https://toronto.craigslist.org/d/computers/search/sya'
+        taskId = 'Toronto_https___toronto__760c6829a9'
+        status = 'PENDING'
+        result_file_path = ''
+        task_status = ''
+        conn = sqlite3.connect(db_path)
+        task_select_sql = ''' SELECT * FROM tasks WHERE task_id  = :taskId '''
+        events_select_sql = ''' SELECT * FROM task_events WHERE task_id  = :taskId '''
+        task_select_obj = {
+                    'taskId' : taskId
+                }
+        cur = conn.cursor()
+        cur.execute(task_select_sql, task_select_obj)
+        rows = cur.fetchall()
+        print(len(rows))
+        for row in rows:
+            filterId = row[0]
+            events_select_obj = {
+                    'taskId' : int(filterId)
+                }
+            cur.execute(events_select_sql, events_select_obj)
+            eventrows = cur.fetchall()
+            print(len(eventrows))
+            for eventrow in eventrows:
+                status = eventrow[2]
+                if (status == 'DONE'):
+                    task_status = 'SUCCESS'
+                    tasks = taskId.split('__')
+                    if(os.path.exists(file_path)):
+                        result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(tasks[2]))
+                        os.rename('result.csv', 'result_{}.csv'.format(tasks[2]))
+                    else:
+                        print('error')
+            
+        return render_template('table_single.html', url=URL, status=status, task_status=task_status, file_path=result_file_path)
+        # return luigiLib.tasks('https://toronto.craigslist.org/d/computers/search/sya')
 
 
 
