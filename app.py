@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "database.db")
-image_path = os.path.join(BASE_DIR, "images\\")
+image_path = os.path.join(BASE_DIR, "static\\images\\")
 file_path = os.path.join(BASE_DIR, "result.csv")
 database = "database"
 
@@ -34,7 +34,7 @@ database = "database"
 
 @app.route('/', methods=['POST','GET'])
 def index():
-
+    print(image_path)
     req_json = request.get_json()
     # url = request.values.get('url')
     # if len(url) <= 0:
