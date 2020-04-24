@@ -4,6 +4,8 @@
 
 
 import subprocess
+import os
+import sqlite3
 
 def tasks(url):
     # subprocess.run([ 'python', '-m', 'luigi', '--module', 'carAndTruck', 'Toronto', '--urlpath', url ])
@@ -13,3 +15,22 @@ def tasks(url):
         for line in fin:
             taskId = line.strip()
     return taskId
+
+def imageTask(limit, imagePath, database):
+    if(os.path.exists('urls.txt')):
+        os.remove('urls.txt')
+    if (limit>25):
+        subprocess.run(['python', 'avatar.py', 'ImageContent', '--limit',limit,'--imagepath',imagePath])
+    else:
+        subprocess.run(['python', 'avatar.py', 'ImageContent', '--imagepath',imagePath])
+    if(os.path.isfile('urls.txt')):
+        records = []
+        with open('urls.txt', 'r') as fin:
+            for line in fin:
+                tup = (line.strip(),)
+                records.append(tup)
+        print(records)
+    return records
+        
+
+

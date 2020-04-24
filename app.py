@@ -13,6 +13,8 @@ import luigiLib
 import subprocess
 import os
 import random, string
+from flask import send_file
+
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -22,6 +24,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "database.db")
+image_path = os.path.join(BASE_DIR, "images\\")
 file_path = os.path.join(BASE_DIR, "result.csv")
 database = "database"
 
@@ -47,6 +50,7 @@ def trigger():
         status = 'FAILURE'
         result_file_path = ''
         task_status = 'FAILURE'
+        fileName = 'result.csv'
         if(len(taskId)>0):
             try:
                 conn = sqlite3.connect(db_path)
@@ -85,17 +89,63 @@ def trigger():
             except Exception as e:
                 print(e)
                 if(os.path.exists(file_path)):
-                    result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(tasks[2]))
-                    destFile = tasks[2]
-                    if(os.path.exists(result_file_path)):
-                        destFile = randomword(12)
+                    destFile = randomword(12)
                     print(destFile)
                     os.rename('result.csv', 'result_{}.csv'.format(destFile))
                     status = 'DONE'
                     task_status='SUCCESS'
                 else:
                     print('failure of tasks')
-        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path=result_file_path)
+        else:
+            if(os.path.exists(file_path)):
+                destFile = randomword(12)
+                os.rename('result.csv', 'result_{}.csv'.format(destFile))
+                result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(destFile))
+                fileName = 'result_{}.csv'.format(destFile)
+                status = 'DONE'
+                task_status='SUCCESS'
+        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path=fileName)
+
+# @app.route('/download/<fileName>')
+# def getcsvfile():
+#     try:
+#         with open('{}'.format(fileName)) as f:
+#             return send_file(f, mimetype='text/csv')
+#     except OSError:
+#         print('404')
+
+@app.route('/triggerImage')
+def getImage():
+    try:
+        fileName = 'imagespath.csv'
+        newfileName = ''
+        records = luigiLib.imageTask(0, image_path, db_path)
+        try:
+            conn = create_connection(db_path)
+            print('Query')
+            cur = conn.cursor()
+            cur.executemany('INSERT INTO imagetasks(url) VALUES (?)',records)
+            conn.commit()
+            print(cur.rowcount)
+            print('commited')
+            task_select_sql = ''' SELECT * FROM imagetasks '''
+            cur.execute(task_select_sql)
+            rows = cur.fetchall()
+            print(len(rows))
+            for row in rows:
+                print(row)
+            if(os.path.exists(fileName)):
+                fileNameExt = randomword(10)
+                newfileName = 'imagespath_{}.csv'.format(fileNameExt)
+                os.rename(fileName, newfileName)
+        except Exception as e:
+            print(e)
+        finally:
+            conn.close()
+    except Exception as e:
+        print(e)
+    
+    return fileName
 
 def randomword(length):
     letters = string.ascii_lowercase
