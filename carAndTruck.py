@@ -33,9 +33,13 @@ class HrefCount(luigi.Task):
                 fout.write('{}\n'.format(self.urlpath))
                 soup = BeautifulSoup (response.text, features="lxml")
                 nextButton = soup.find('link', attrs={'rel': 'next'})
-                href = nextButton.get('href')
+                if nextButton is not None:
+                    href = nextButton.get('href')
+                    print(href)
                 totalcount = soup.find('span', attrs={'class': 'totalcount'})
                 rangeto = soup.find('span', attrs={'class': 'rangeTo'})
+                print('totalcount={}'.format(totalcount))
+                print('rangeto={}'.format(rangeto))
                 while int(rangeto.text) < int(totalcount.text):
                     if href is not None:
                         response = requests.get(href)
@@ -49,6 +53,7 @@ class HrefCount(luigi.Task):
                             else:
                                 href = None
                     else:
+                        print(response)
                         break
                     continue
 
