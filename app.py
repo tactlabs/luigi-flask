@@ -34,7 +34,6 @@ database = "database"
 
 @app.route('/', methods=['POST','GET'])
 def index():
-    print(image_path)
     req_json = request.get_json()
     # url = request.values.get('url')
     # if len(url) <= 0:
@@ -171,5 +170,5 @@ def create_connection(db_file):
 #----------------------------------------------------------------------------#
 
 if __name__ == '__main__':
-    #app.debug = True;
-    app.run('127.0.0.1', '4000', True)
+    #app.debug = True;1
+    app.run('127.0.0.1', 4000, True)

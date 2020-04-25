@@ -20,7 +20,7 @@ def imageTask(limit, imagePath, database):
     if(os.path.exists('urls.txt')):
         os.remove('urls.txt')
     if (limit>25):
-        subprocess.run(['python', 'avatar.py', 'ImageContent', '--limit',limit,'--imagepath',imagePath])
+        subprocess.run(['python', 'avatar.py', 'ImageContent', '--limit',str(limit), '--imagepath',imagePath])
     else:
         subprocess.run(['python', 'avatar.py', 'ImageContent', '--imagepath',imagePath])
     if(os.path.isfile('urls.txt')):

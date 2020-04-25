@@ -1,3 +1,6 @@
+#python avatar.py ImageContent --imagepath D:\works\tact\luigi_flask\images\
+#python avatar.py ImageContent --imagepath D:\works\tact\luigi_flask\images\ --limit 50
+
 import luigi
 import requests
 import os
@@ -69,17 +72,17 @@ class FetchUrl(luigi.Task):
                     if(os.path.exists(filePath)):
                         fileName = ''.join(random.choice(letters) for i in range(14))
                         filePath = self.imagepath+fileName+'.png'
-                        print(filePath)
+                        print( os.path.relpath(filePath))
                         file = open(filePath, "wb")
                         file.write(response.content)
                         file.close()
-                        fout.write('{} | {}\n'.format(url, filePath))
+                        fout.write('{} | {}\n'.format(url, os.path.relpath(filePath)))
                     else:
-                        print(filePath)
+                        print( os.path.relpath(filePath))
                         file = open(filePath, "wb")
                         file.write(response.content)
                         file.close()
-                        fout.write('{} | {}\n'.format(url, filePath))
+                        fout.write('{} | {}\n'.format(url, os.path.relpath(filePath)))
 
 
 if __name__ == '__main__':
