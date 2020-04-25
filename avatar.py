@@ -8,17 +8,21 @@ import random, string
 import sqlite3
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "database.db")
+db_path  = os.path.join(BASE_DIR, "database.db")
 
+AVATAR_STARTING_ID      =  1
+AVATAR_ENDING_ID        =  64186191
+AVATAR_DEFAULT_URL      = 'https://avatars2.githubusercontent.com/u/'
+AVATAR_FETCH_FILE       = 'urls.txt'
+AVATAR_IMAGEPATH_FILE   = 'imagespath.csv'
 
 class FetchUrl(luigi.Task):
-    urlDefault = 'https://avatars2.githubusercontent.com/u/'
     limit = luigi.IntParameter(default=25)
     def requires(self):
         return[]
 
     def output(self):
-        return luigi.LocalTarget('urls.txt')
+        return luigi.LocalTarget(AVATAR_FETCH_FILE)
 
     def run(self):
         with self.output().open('w') as fout:
@@ -30,8 +34,8 @@ class FetchUrl(luigi.Task):
             rows = cur.fetchall()
             print(len(rows))
             for x in range(1, self.limit+1):
-                num = random.randint(1, 64186191)
-                url=self.urlDefault+str(num)
+                num = random.randint(AVATAR_STARTING_ID, AVATAR_ENDING_ID)
+                url=AVATAR_DEFAULT_URL+str(num)
                 if(len(rows)>0):
                     for row in rows:
                         if(str(url)==str(row[0])):
@@ -58,7 +62,7 @@ class FetchUrl(luigi.Task):
             return[FetchUrl(self.limit)]
 
         def output(self):
-            return luigi.LocalTarget('imagespath.csv')
+            return luigi.LocalTarget(AVATAR_IMAGEPATH_FILE)
 
         def run(self):
             with self.input()[0].open() as fin, self.output().open('w') as fout:
