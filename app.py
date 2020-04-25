@@ -46,12 +46,12 @@ def index():
 def trigger():
     if request.method == 'POST':
         data = request.form.get("url")
-        #taskId = luigiLib.tasks(data)
-        taskId = 'Toronto_https___toronto__760c6829a9'
+        taskId = luigiLib.tasks(data)
         status = 'FAILURE'
         result_file_path = ''
         task_status = 'FAILURE'
-        file_name = 'result.csv'
+        fileName = 'result.csv'
+        new_file_name = 'result.csv'
         if(len(taskId)>0):
             try:
                 conn = sqlite3.connect(DB_PATH)
@@ -84,6 +84,7 @@ def trigger():
                                 if(os.path.exists(result_file_path)):
                                     destFile = randomword(12)
                                 print(destFile)
+                                new_file_name = 'result_{}.csv'.format(destFile)
                                 os.rename('result.csv', 'result_{}.csv'.format(destFile))
                             else:
                                 print('error')
@@ -93,6 +94,7 @@ def trigger():
                     destFile = randomword(12)
                     print(destFile)
                     os.rename('result.csv', 'result_{}.csv'.format(destFile))
+                    new_file_name = 'result_{}.csv'.format(destFile)
                     status = 'DONE'
                     task_status='SUCCESS'
                 else:
@@ -102,10 +104,10 @@ def trigger():
                 destFile = randomword(12)
                 os.rename('result.csv', 'result_{}.csv'.format(destFile))
                 result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(destFile))
-                fileName = 'result_{}.csv'.format(destFile)
+                new_file_name = 'result_{}.csv'.format(destFile)
                 status = 'DONE'
                 task_status='SUCCESS'
-        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path='result_juprxnsniikp.csv')
+        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path=new_file_name)
 
 @app.route('/download/<filename>')
 def getcsvfile(filename):

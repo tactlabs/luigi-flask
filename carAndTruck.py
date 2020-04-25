@@ -1,4 +1,4 @@
-#run: python carAndztruck.py Toronto-local-scheduler --fileName toronto.txt
+# run: python carAndztruck.py Toronto-local-scheduler --fileName toronto.txt
 # python carAndTruck.py Toronto --local-scheduler --urlpath https://toronto.craigslist.org/d/cars-trucks/search/cta
 # python carAndTruck.py Toronto --local-scheduler --urlpath https://toronto.craigslist.org/d/computers/search/sya
 
@@ -9,13 +9,21 @@ from bs4 import BeautifulSoup
 from luigi.format import UTF8
 import os
 
+
+STR_OUTPUT1         = 'out1'
+STR_OUTPUT2         = 'out2'
+HREFCOUNT_OUT1_FILE = 'toronto.txt'
+HREFCOUNT_OUT2_FILE = 'taskid.txt'
+TORONTO_OUT1_FILE   = 'result.csv'
+TORONTO_OUT2_FILE   = 'taskid1.txt'
+
 class HrefCount(luigi.Task):
     urlpath = luigi.Parameter()
     def requires(self):
         return []
 
     def output(self):
-        return { 'out1' : luigi.LocalTarget("toronto.txt"), 'out2' : luigi.LocalTarget("taskid.txt") }
+        return { STR_OUTPUT1 : luigi.LocalTarget(HREFCOUNT_OUT1_FILE), STR_OUTPUT2 : luigi.LocalTarget(HREFCOUNT_OUT2_FILE) }
 
     def run(self):
         with open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:
@@ -51,7 +59,7 @@ class Toronto(luigi.Task):
         return { 'in1' :HrefCount(self.urlpath) }
 
     def output(self):
-        return { 'out1' : luigi.LocalTarget("result.csv", format=UTF8), 'out2' : luigi.LocalTarget("taskid1.txt") }
+        return { STR_OUTPUT1 : luigi.LocalTarget(TORONTO_OUT1_FILE, format=UTF8), STR_OUTPUT2 : luigi.LocalTarget(TORONTO_OUT2_FILE) }
     
     def run(self):
         with open(self.input()['in1']['out1'].path) as fin, open(self.input()['in1']['out2'].path) as fintask, open(self.output()['out1'].path ,'w') as fout, open(self.output()['out2'].path ,'w') as ftask:
