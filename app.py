@@ -14,6 +14,7 @@ import subprocess
 import os
 import random, string
 from flask import send_file
+from flask import send_from_directory
 
 
 #----------------------------------------------------------------------------#
@@ -22,11 +23,11 @@ from flask import send_file
 
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "database.db")
-image_path = os.path.join(BASE_DIR, "static\\images\\")
-file_path = os.path.join(BASE_DIR, "result.csv")
-database = "database"
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
+DB_PATH     = os.path.join(BASE_DIR, "database.db")
+IMAGE_PATH  = os.path.join(BASE_DIR, "static\\images\\")
+FILE_PATH   = os.path.join(BASE_DIR, "result.csv")
+database    = "database"
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -45,14 +46,15 @@ def index():
 def trigger():
     if request.method == 'POST':
         data = request.form.get("url")
-        taskId = luigiLib.tasks(data)
+        #taskId = luigiLib.tasks(data)
+        taskId = 'Toronto_https___toronto__760c6829a9'
         status = 'FAILURE'
         result_file_path = ''
         task_status = 'FAILURE'
-        fileName = 'result.csv'
+        file_name = 'result.csv'
         if(len(taskId)>0):
             try:
-                conn = sqlite3.connect(db_path)
+                conn = sqlite3.connect(DB_PATH)
                 task_select_sql = ''' SELECT * FROM tasks WHERE task_id  = :taskId '''
                 events_select_sql = ''' SELECT * FROM task_events WHERE task_id  = :taskId '''
                 task_select_obj = {
@@ -76,7 +78,7 @@ def trigger():
                             task_status = 'SUCCESS'
                             if(len(taskId)>0):
                                 tasks = taskId.split('__')
-                            if(os.path.exists(file_path)):
+                            if(os.path.exists(FILE_PATH)):
                                 result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(tasks[2]))
                                 destFile = tasks[2]
                                 if(os.path.exists(result_file_path)):
@@ -87,7 +89,7 @@ def trigger():
                                 print('error')
             except Exception as e:
                 print(e)
-                if(os.path.exists(file_path)):
+                if(os.path.exists(FILE_PATH)):
                     destFile = randomword(12)
                     print(destFile)
                     os.rename('result.csv', 'result_{}.csv'.format(destFile))
@@ -96,31 +98,31 @@ def trigger():
                 else:
                     print('failure of tasks')
         else:
-            if(os.path.exists(file_path)):
+            if(os.path.exists(FILE_PATH)):
                 destFile = randomword(12)
                 os.rename('result.csv', 'result_{}.csv'.format(destFile))
                 result_file_path = os.path.join(BASE_DIR, 'result_{}.csv'.format(destFile))
                 fileName = 'result_{}.csv'.format(destFile)
                 status = 'DONE'
                 task_status='SUCCESS'
-        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path=fileName)
+        return render_template('table_single.html', url=data, status=status, task_status=task_status, file_path='result_juprxnsniikp.csv')
 
-# @app.route('/download/<fileName>')
-# def getcsvfile():
-#     try:
-#         with open('{}'.format(fileName)) as f:
-#             return send_file(f, mimetype='text/csv')
-#     except OSError:
-#         print('404')
+@app.route('/download/<filename>')
+def getcsvfile(filename):
+    try:
+        uploads = os.path.join(app.root_path, BASE_DIR)
+        return send_from_directory(directory=uploads, filename=filename)
+    except OSError:
+        print('404')
 
 @app.route('/triggerImage')
 def getImage():
     try:
         fileName = 'imagespath.csv'
         newfileName = ''
-        records = luigiLib.imageTask(0, image_path, db_path)
+        records = luigiLib.imageTask(0, IMAGE_PATH, DB_PATH)
         try:
-            conn = create_connection(db_path)
+            conn = create_connection(DB_PATH)
             print('Query')
             cur = conn.cursor()
             cur.executemany('INSERT INTO imagetasks(url) VALUES (?)',records)
@@ -144,7 +146,7 @@ def getImage():
     except Exception as e:
         print(e)
     
-    return fileName
+    return newfileName
 
 def randomword(length):
     letters = string.ascii_lowercase
