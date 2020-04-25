@@ -3,9 +3,16 @@
 Simple Application to collect the data using luigi and parser will be beautifulsoup
 
 To run:
+pip install -r requirements.txt
+
+open the seperate terminal and run the command : luigid
+
 python app.py
 
 to view: http://127.0.0.1:4000/
+
+luigid -- Need to run in the seperate terminal
+this will start the luigi scheduler globally and can view the UI part in : http://localhost:8082/
 
 to run luigi seperately in local
 python Module TaskName --local-scheduler --parameterName parameterValue

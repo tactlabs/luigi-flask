@@ -35,13 +35,13 @@ class HrefCount(luigi.Task):
                 nextButton = soup.find('link', attrs={'rel': 'next'})
                 if nextButton is not None:
                     href = nextButton.get('href')
-                    print(href)
                 totalcount = soup.find('span', attrs={'class': 'totalcount'})
                 rangeto = soup.find('span', attrs={'class': 'rangeTo'})
-                print('totalcount={}'.format(totalcount))
-                print('rangeto={}'.format(rangeto))
+                print('totalcount={}'.format(totalcount.text))
+                print('rangeto={}'.format(rangeto.text))
                 while int(rangeto.text) < int(totalcount.text):
                     if href is not None:
+                        print(href)
                         response = requests.get(href)
                         if(response.status_code == 200):
                             fout.write('{}\n'.format(href))
