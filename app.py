@@ -15,6 +15,7 @@ import os
 import random, string
 from flask import send_file
 from flask import send_from_directory
+from process_image import image_to_text
 
 
 #----------------------------------------------------------------------------#
@@ -36,6 +37,7 @@ database    = "database"
 @app.route('/', methods=['POST','GET'])
 def index():
     req_json = request.get_json()
+    image_to_text('download.png')
     # url = request.values.get('url')
     # if len(url) <= 0:
     #     return error_result({"msg":"Unable to find URL param"})

@@ -11,3 +11,8 @@ luigi==2.8.12
 toml==0.10.0
 requests==2.23.0
 WTForms==2.2.1
+pillow=7.1.2
+pytesseract=0.3.4
+numpy=1.18.3
+opencv-python=4.2.0.34
+matplotlib=3.2.1
